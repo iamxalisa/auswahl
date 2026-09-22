@@ -187,7 +187,7 @@ function post(payload){
 }
 function submitApp(btn){var t=L(),f=state.form;
   btn.disabled=true; btn.textContent=t.sending;
-  var payload={type:"application",v:3,lang:state.lang,name:f.name,age:f.age,city:f.city,job:f.job,ans:f.ans,fcOrder:state.fcOrder,t:Date.now(),ua:navigator.userAgent};
+  var payload={type:"application",v:3,dur:state.startT?Math.round((Date.now()-state.startT)/1000):0,lang:state.lang,name:f.name,age:f.age,city:f.city,job:f.job,ans:f.ans,fcOrder:state.fcOrder,t:Date.now(),ua:navigator.userAgent};
   post(payload).then(function(res){ if(!res||!res.ok||!res.az) throw new Error("bad"); renderDone(res.az,null); })
   .catch(function(){ payload.az=localAz(); renderDone(payload.az, encode(payload,"KA")); });
 }
@@ -228,7 +228,7 @@ root.addEventListener("click",function(ev){var b=ev.target.closest("button");if(
   if(b.hasAttribute("data-share")){ navigator.share({text:b.getAttribute("data-share")}).catch(function(){}); return; }
   var sec=SECS[state.step]&&SECS[state.step].id;
   switch(b.getAttribute("data-act")){
-    case "start": state.step=0; renderStep(); break;
+    case "start": state.step=0; state.startT=Date.now(); renderStep(); break;
     case "next": collect(ITEMS,state.form.ans,sec); if(!valid(ITEMS,state.form.ans,sec)){document.getElementById("err").textContent=L().req;return;} state.step++; renderStep(); break;
     case "back": collect(ITEMS,state.form.ans,sec); state.step--; renderStep(); break;
     case "submit": collect(ITEMS,state.form.ans,sec); if(!valid(ITEMS,state.form.ans,sec)){document.getElementById("err").textContent=L().req;return;} submitApp(b); break;
